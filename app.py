@@ -1,5 +1,3 @@
-import streamlit as st
-
 # 1. Configuración de la página (Estilo limpio)
 st.set_page_config(
     page_title="NutriSnap",
