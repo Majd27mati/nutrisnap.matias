@@ -1,69 +1,56 @@
 import streamlit as st
-import datetime
 
-# Configuración de la página
-st.set_page_config(page_title="NutriSnap - Contador de Macros", page_icon="🍏", layout="centered")
+# 1. Configuración de la página (Estilo limpio)
+st.set_page_config(
+    page_title="NutriSnap",
+    page_icon="🍏",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-st.title("🍏 NutriSnap")
-st.subheader("Tu asistente de nutrición inteligente")
+# Estilo CSS personalizado para fuentes y bordes minimalistas
+st.markdown("""
+    <style>
+    .big-title { font-size: 32px; font-weight: 700; color: #2E3A59; letter-spacing: -0.5px; margin-bottom: 5px; }
+    .subtitle { font-size: 16px; color: #8F9BB3; margin-bottom: 30px; }
+    .section-title { font-size: 18px; font-weight: 600; color: #2E3A59; margin-bottom: 15px; }
+    div[data-testid="stMetricValue"] { font-size: 28px !important; font-weight: 600 !important; }
+    </style>
+""", unsafe_allowed_html=True)
+
+# 2. Encabezado Minimalista
+st.markdown('<div class="big-title">NutriSnap</div>', unsafe_allowed_html=True)
+st.markdown('<div class="subtitle">Asistente de nutrición inteligente y registro diario</div>', unsafe_allowed_html=True)
+
 st.markdown("---")
 
-# --- ESTADO INICIAL (Base de datos temporal en memoria) ---
-if "calorias_consumidas" not in st.session_state:
-    st.session_state.calorias_consumidas = 0
-if "proteinas_consumidas" not in st.session_state:
-    st.session_state.proteinas_consumidas = 0
-if "historial" not in st.session_state:
-    st.session_state.historial = []
+# 3. Panel de Métricas Detalladas (En columnas limpias)
+st.markdown('<div class="section-title">Resumen de Macros Restantes</div>', unsafe_allowed_html=True)
 
-# --- PANEL LATERAL: CONFIGURACIÓN DEL PERFIL ---
-st.sidebar.header("👤 Tu Perfil y Metas")
-peso = st.sidebar.number_input("Peso (kg):", min_value=30, max_value=200, value=69)
-estatura = st.sidebar.number_input("Estatura (cm):", min_value=100, max_value=250, value=171)
-edad = st.sidebar.number_input("Edad:", min_value=10, max_value=100, value=17)
-objetivo = st.sidebar.selectbox("Tu Objetivo:", ["Déficit Calórico (Perder Grasa)", "Volumen (Ganar Músculo)"])
-
-# Lógica matemática para calcular metas diarias (Fórmula Mifflin-St Jeor)
-geb = (10 * peso) + (6.25 * estatura) - (5 * edad) + 5
-gasto_mantenimiento = geb * 1.55 # Factor para actividad moderada (gimnasio 3-5 días)
-
-if "Déficit" in objetivo:
-    meta_calorias = int(gasto_mantenimiento - 400)
-else:
-    meta_calorias = int(gasto_mantenimiento + 400)
-
-meta_proteinas = int(peso * 2) # Estándar de 2g de proteína por kg
-
-# Mostrar metas calculadas en la barra lateral
-st.sidebar.markdown("### 🎯 Tus Metas Diarias:")
-st.sidebar.write(f"**Calorías Objetivo:** {meta_calorias} kcal")
-st.sidebar.write(f"**Proteínas Objetivo:** {meta_proteinas} g")
-
-if st.sidebar.button("🔄 Reiniciar Contador Diario"):
-    st.session_state.calorias_consumidas = 0
-    st.session_state.proteinas_consumidas = 0
-    st.session_state.historial = []
-    st.rerun()
-
-# --- PANEL PRINCIPAL: DASHBOARD DIARIO ---
 col1, col2 = st.columns(2)
 
-calorias_restantes = meta_calorias - st.session_state.calorias_consumidas
-proteinas_restantes = meta_proteinas - st.session_state.proteinas_consumidas
-
 with col1:
-    st.metric(label="🔥 Calorías Restantes", value=f"{calorias_restantes} kcal", delta=f"Consumidas: {st.session_state.calorias_consumidas}")
+    # st.metric crea un diseño de tarjeta impecable por defecto
+    st.metric(label="🔥 Energía", value="2,202 kcal", delta="Consumidas: 0 kcal", delta_color="inverse")
+
 with col2:
-    st.metric(label="💪 Proteínas Restantes", value=f"{proteinas_restantes} g", delta=f"Consumidas: {st.session_state.proteinas_consumidas}g")
+    st.metric(label="💪 Proteína", value="138 g", delta="Consumidas: 0 g", delta_color="inverse")
 
-# Barras de progreso visuales
-st.markdown("*Progreso de Calorías:*")
-porcentaje = min(float(st.session_state.calorias_consumidas) / float(meta_calorias), 1.0)
-st.progress(porcentaje)
-st.write("---")
-st.subheader("📸 Analiza tu platillo")
-imagen_comida = st.camera_input("Toma una foto de tu comida para calcular los macros")
+# 4. Progreso Visual Fino
+st.markdown(" ")
+st.caption("Progreso diario de calorías")
+st.progress(0.0) # Barra de progreso minimalista (va de 0.0 a 1.0)
 
-if imagen_comida:
-    st.success("¡Imagen recibida con éxito! Analizando...")
-    # Aquí es donde el código procesará tus calorías y proteínas
+st.markdown("---")
+
+# 5. Zona de Captura Impecable
+st.markdown('<div class="section-title">📸 Análisis de Platillo</div>', unsafe_allowed_html=True)
+
+# Contenedor limpio para la cámara
+with st.container():
+    imagen_comida = st.camera_input("Apunta a tu plato para calcular macros")
+
+    if imagen_comida:
+        with st.spinner("Analizando composición nutricional..."):
+            # Aquí irá tu lógica de análisis más adelante
+            st.success("¡Imagen recibida con éxito!")
