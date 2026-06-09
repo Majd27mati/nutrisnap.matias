@@ -60,3 +60,10 @@ with col2:
 st.markdown("*Progreso de Calorías:*")
 porcentaje = min(float(st.session_state.calorias_consumidas) / float(meta_calorias), 1.0)
 st.progress(porcentaje)
+st.write("---")
+st.subheader("📸 Analiza tu platillo")
+imagen_comida = st.camera_input("Toma una foto de tu comida para calcular los macros")
+
+if imagen_comida:
+    st.success("¡Imagen recibida con éxito! Analizando...")
+    # Aquí es donde el código procesará tus calorías y proteínas
